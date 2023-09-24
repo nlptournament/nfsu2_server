@@ -1,0 +1,29 @@
+name: "Build"
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: mingw32
+          install: mingw-w64-i686-openssl
+          pacboy: >-
+            toolchain:p
+            cmake:p
+            ninja:p
+            gcc:p
+      - shell: msys2 {0}
+        run: gcc --version
+      - shell: msys2 {0}
+        run: gcc -o nfsu2-server main.c
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: nfsu2-server
+          path: nfsu2-server.exe
